@@ -250,6 +250,7 @@ export enum SupportedCliCommands {
   wizard = 'wizard',
   woof = 'woof',
   log4shell = 'log4shell',
+  apps = 'apps',
 }
 
 export interface IacFileInDirectory {

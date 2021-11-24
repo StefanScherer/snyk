@@ -135,6 +135,7 @@
     "snyk-sbt-plugin": "2.11.4",
     "snyk-try-require": "^2.0.2",
     "strip-ansi": "^5.2.0",
+    "table": "^6.7.5",
     "tar": "^6.1.2",
     "tempy": "^1.0.1",
     "uuid": "^8.3.2",

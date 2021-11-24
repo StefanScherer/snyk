@@ -9,6 +9,7 @@ interface Config {
   MAX_PATH_COUNT: number;
   API: string;
   api: string;
+  API_V3: string;
   disableSuggestions: string;
   org: string;
   ROOT: string;
@@ -63,5 +64,7 @@ if (!config.ROOT) {
   const apiUrl = url.parse(config.API);
   config.ROOT = apiUrl.protocol + '//' + apiUrl.host;
 }
+
+config.API_V3 = userConfig.get('v3endpoint') || 'https://api.snyk.io/v3';
 
 export default config;
