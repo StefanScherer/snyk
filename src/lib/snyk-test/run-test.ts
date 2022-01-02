@@ -1,5 +1,5 @@
 import * as fs from 'fs';
-const get = require('lodash.get');
+import * as get from 'lodash.get';
 import * as path from 'path';
 import * as pathUtil from 'path';
 import * as debugModule from 'debug';
