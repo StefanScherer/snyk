@@ -452,6 +452,17 @@ async function parseRes(
       return vuln;
     });
   }
+  if (
+    options.docker &&
+    res.docker?.baseImage &&
+    options['exclude-base-image-vulns']
+  ) {
+    res.vulnerabilities = res.vulnerabilities.filter(
+      (vuln) => (vuln as DockerIssue).dockerfileInstruction,
+    );
+    // `exclude-base-image-vulns` might have left us with no vulns, so `ok` is now `true`
+    res.ok = res.vulnerabilities.length === 0;
+  }
 
   res.uniqueCount = countUniqueVulns(res.vulnerabilities);
 
