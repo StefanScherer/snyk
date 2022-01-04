@@ -6,7 +6,7 @@
 
 ## Description
 
-The test command checks projects for open source vulnerabilities and license issues. The test command tries to autodetect supported manifest files with dependencies and test those.
+The test command checks projects for open source vulnerabilities and license issues. The test command tries to auto-detect supported manifest files with dependencies and test those.
 
 ## Exit codes
 
@@ -17,9 +17,17 @@ Possible exit codes and their meaning:
 **2**: failure, try to re-run command<br />
 **3**: failure, no supported projects detected<br />
 
+## Environment variables and connecting to the Snyk API
+
+You can use environment variables to configure the Snyk CLI and also set variables to configure the Snyk CLI to connect with the Snyk API. See [Configure the Snyk CLI](https://docs.snyk.io/features/snyk-cli/configure-the-snyk-cli).
+
+## Debug
+
+Use the `-d` to output the debug logs.
+
 ## Options
 
-For command-specific information, use the `--help` option with any command, for example, `snyk container --help`. See also subsequent sections for options available across all commands; options for specific build environments, package managers, and languages; and `[<CONTEXT-SPECIFIC OPTIONS>]` which you specify last.
+See also subsequent sections for options for specific build environments,  package managers, languages, and `[<CONTEXT-SPECIFIC OPTIONS>]` which you specify last.
 
 ### `--all-projects`
 
@@ -30,6 +38,7 @@ Auto-detect all projects in the working directory.
 Use with options as documented to indicate how many sub-directories to search. `DEPTH` must be a number.
 
 Default: 4 (the current working directory and 3 sub-directories).
+
 Example: `--detection-depth=3` limits search to the specified directory (or the current directory if no `<PATH>` is specified) plus three levels of subdirectories.
 
 ### `--exclude=<DIRECTORY>[,<DIRECTORY>]...>`
@@ -41,6 +50,7 @@ Use the exclude option with `--detection-depth` to ignore directories at any dep
 ### `--prune-repeated-subdependencies`, `-p`
 
 Prune dependency trees, removing duplicate sub-dependencies.
+
 Continues to find all vulnerabilities, but potentially not all of the vulnerable paths.
 
 ### `--print-deps`
@@ -59,13 +69,13 @@ Default: scan only production dependencies.
 
 ### `--org=<ORG_NAME>`
 
-Specify the <ORG_NAME>, that is, an Organization in your Snyk account, to run Snyk commands tied to a specific organization. Use the same Organization ID as you used when you monitored the project with snyk monitor. The Organization ID also influences some features availability, and private test limits.
+Specify the <ORG_NAME>, that is, an organization in your Snyk account, to run Snyk commands tied to a specific organization. Use the same Organization ID as you used when you monitored the project with snyk monitor. The Organization ID also influences some features availability and private test limits.
+
 If you have multiple organizations, you can set a default from the CLI using:
 
 `$ snyk config set org=<ORG_NAME>`
 
-Set a default to ensure all newly monitored projects are created
-under your default organization. If you need to override the default, use the `--org=<ORG_NAME>` option.
+Set a default to ensure all newly tested projects are tested under your default organization. If you need to override the default, use the `--org=<ORG_NAME>` option.
 
 Default: `<ORG_NAME>` that is the current preferred organization in your [Account settings](https://app.snyk.io/account).
 
@@ -73,7 +83,7 @@ Default: `<ORG_NAME>` that is the current preferred organization in your [Accoun
 
 Specify a package file.
 
-When testing locally or monitoring a project, you can specify the file that Snyk should inspect for package information. When omitted Snyk tries to detect the appropriate file for your project.
+When testing locally or monitoring a project, you can specify the file that Snyk should inspect for package information. When the file is not specified, Snyk tries to detect the appropriate file for your project.
 
 ### `--ignore-policy`
 
@@ -81,7 +91,7 @@ Ignore all set policies, the current policy in the `.snyk` file, Org level ignor
 
 ### `--trust-policies`
 
-Apply and use ignore rules from the Snyk policies your dependencies; otherwise ignore rules in the dependencies are only shown as a suggestion.
+Apply and use ignore rules from the snyk policies your dependencies; otherwise ignore rules in the dependencies are only shown as a suggestion.
 
 ### `--show-vulnerable-paths=none|some|all`
 
@@ -96,7 +106,7 @@ Specify a custom Snyk project name.
 
 ### `--target-reference=<TARGET_REFERENCE>`
 
-Specify a reference which differentiates this project, for example, a branch name or version. Projects having the same reference can be grouped based on that reference. Only supported for Snyk Open Source. See [Separating projects by branch or version](https://snyk.info/3B0vTPs).
+Specify a reference which differentiates this project, for example, a branch name or version. Projects having the same reference can be grouped based on that reference. Only supported for Snyk Open Source. For more information see [Separating projects by branch or version](https://snyk.info/3B0vTPs).
 
 ### `--policy-path=<PATH_TO_POLICY_FILE>`
 
@@ -109,7 +119,8 @@ Print results in JSON format.
 ### `--json-file-output=<OUTPUT_FILE_PATH>`
 
 Save test output in JSON format directly to the specified file, regardless of whether or not you use the `--json` option.
-This is especially useful if you want to display the human-readable test output via stdout and at the same time save the JSON format output to a file.
+
+This is especially useful if you want to display the human-readable test output using stdout and at the same time save the JSON format output to a file.
 
 ### `--sarif`
 
@@ -118,7 +129,8 @@ Return results in SARIF format.
 ### `--sarif-file-output=<OUTPUT_FILE_PATH>`
 
 Save test output in SARIF format directly to the <OUTPUT_FILE_PATH> file, regardless of whether or not you use the `--sarif` option.
-This is especially useful if you want to display the human-readable test output via stdout and at the same time save the SARIF format output to a file.
+
+This is especially useful if you want to display the human-readable test output using stdout and at the same time save the SARIF format output to a file.
 
 ### `--severity-threshold=low|medium|high|critical`
 
@@ -128,46 +140,23 @@ Report only vulnerabilities at the specified level or higher.
 
 Fail only when there are vulnerabilities that can be fixed.
 
-- `all`: fails when there is at least one vulnerability that can be either upgraded or patched.
-- `upgradable`: fails when there is at least one vulnerability that can be upgraded.
-- `patchable`: fails when there is at least one vulnerability that can be patched.
+- `all`: fail when there is at least one vulnerability that can be either upgraded or patched.
+- `upgradable`: fail when there is at least one vulnerability that can be upgraded.
+- `patchable`: fail when there is at least one vulnerability that can be patched.
 
 If vulnerabilities do not have a fix and this option is being used, tests pass.
 
-## Options available across all commands
-
-#### `--insecure`
-
-Ignore unknown certificate authorities.
-
-#### `-d`
-
-Output debug logs.
-
-#### `--quiet`, `-q`
-
-Silence all output.
-
-#### `--version`, `-v`
-
-Print version.
-
-#### `--help`, `-h`
-
-Print help text. Note that help is also a command: `help [<COMMAND>]`.
-
 ## Options for Maven projects
 
-[More information about Maven CLI options](https://snyk.co/ucT6P)
+For more information about Maven CLI options see [Snyk for Java (Gradle, Maven)](https://docs.snyk.io/products/snyk-open-source/language-and-package-manager-support/snyk-for-java-gradle-maven).
 
 ### `--scan-all-unmanaged`
 
-Auto detect maven jars, aars, and wars in given directory. To test individually use `--file=<JAR_FILE_NAME>`.
+Auto-detect maven jars, aars, and wars in given directory. To test individually use `--file=<JAR_FILE_NAME>`.
 
 ### `--reachable`
 
-Analyze your source code to find which vulnerable
-functions and packages are called.
+Analyze your source code to find which vulnerable functions and packages are called.
 
 ### `--reachable-timeout=<TIMEOUT>`
 
@@ -177,7 +166,7 @@ Default: 300 (5 minutes).
 
 ## Options for Gradle projects
 
-[More information about Gradle CLI options](https://snyk.co/ucT6P)
+For more information about Gradle CLI options see [Snyk for Java (Gradle, Maven)](https://docs.snyk.io/products/snyk-open-source/language-and-package-manager-support/snyk-for-java-gradle-maven).
 
 ### `--sub-project=<NAME>`, `--gradle-sub-project=<NAME>`
 
@@ -197,8 +186,7 @@ Select certain values of configuration attributes to install dependencies and pe
 
 ### `--reachable`
 
-Analyze your source code to find which vulnerable
-functions and packages are called.
+Analyze your source code to find which vulnerable functions and packages are called.
 
 ### `--reachable-timeout=<TIMEOUT>`
 
@@ -208,7 +196,7 @@ Default: 300 (5 minutes).
 
 ### `--init-script=<FILE`
 
-Use for projects that contain a gradle initialization script.
+Use for projects that contain a Gradle initialization script.
 
 ## Options for NuGet projects
 
@@ -268,44 +256,3 @@ Allow skipping packages that are not found in the environment.
 ## `-- [<CONTEXT-SPECIFIC_OPTIONS>]`
 
 Use context-specific options to pass extra arguments directly to Gradle, Maven, or other build tools. These options are specified last. Example: `snyk test -- --build-cache`
-
-## Environment variables
-
-You can set these environment variables to change CLI settings.
-
-### `SNYK_TOKEN`
-
-Snyk authorization token. Setting this envvar overrides the token that may be available in your `snyk config` settings.
-
-[How to get your account token](https://snyk.co/ucT6J)<br />
-[How to use Service Accounts](https://snyk.co/ucT6L)<br />
-
-### `SNYK_CFG_<KEY>`
-
-Allows you to override any key that is also available as a `snyk config` option.
-
-For example, `SNYK_CFG_ORG=myorg` overrides the default org option in `config` with "myorg".
-
-## Configuring the Snyk API
-
-By default the Snyk CLI connects to `https://snyk.io/api/v1`.
-
-### `SNYK_API`
-
-Sets the API host to use for Snyk requests. Useful for on-premise instances or when using a proxy server. If set with the `http` protocol the CLI upgrades the requests to `https`, unless `SNYK_HTTP_PROTOCOL_UPGRADE` is set to `0`.
-
-### `SNYK_HTTP_PROTOCOL_UPGRADE=0`
-
-If set to the value of `0`, API requests aimed at `http` URLs are not upgraded to `https`. If not set, the default behavior is to upgrade these requests from `http` to `https`. Useful, for example, for reverse proxies.
-
-### `HTTPS_PROXY` and `HTTP_PROXY`
-
-Allows you to specify a proxy to use for `https` and `http` calls. The `https` in the `HTTPS_PROXY` means that _requests using `https` protocol_ use this proxy. The proxy itself doesn't need to use `https`.
-
-### `SNYK_DISABLE_ANALYTICS=1`
-
-Disables all Snyk CLI analytics.
-
-### `SNYK_OAUTH_TOKEN=<OAuth token>`
-
-Specifies OAuth token if required for verification.
