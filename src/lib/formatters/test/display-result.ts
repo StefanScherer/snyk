@@ -23,7 +23,7 @@ import {
 import {
   dockerUserCTA,
   getDisplayedOutput,
-} from '../../../lib/formatters/test/format-test-results';
+} from '../../../lib/formatters/docker/docker-format-test-results';
 import { showMultiScanTip } from '../show-multi-scan-tip';
 
 export function displayResult(
