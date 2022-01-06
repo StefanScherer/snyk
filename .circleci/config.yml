@@ -28,7 +28,7 @@ defaults: &defaults
   working_directory: /mnt/ramdisk/snyk
 
 commands:
-  install_project_dependencies:
+  setup_npm:
     parameters:
       node_version:
         type: string
@@ -41,6 +41,9 @@ commands:
       npm_global_sudo:
         type: boolean
         default: true
+      npm_install:
+        type: boolean
+        default: false
     steps:
       - restore_cache:
           name: Restoring npm cache
@@ -65,25 +68,17 @@ commands:
             npm config set '//registry.npmjs.org/:_authToken' '${NPM_TOKEN}'
             npm config set cache << parameters.npm_cache_directory >>
             npm config set prefer-offline true
-      - run:
-          name: Installing project dependencies
-          command: npm ci
-      - save_cache:
-          name: Saving npm cache
-          key: npm-cache-v2-{{ arch }}-node<< parameters.node_version >>-npm<< parameters.npm_version >>-{{ checksum "package-lock.json" }}
-          paths:
-            - << parameters.npm_cache_directory >>
-  build_project:
-    steps:
-      - run:
-          name: Building project
-          command: npm run build:prod
-      - persist_to_workspace:
-          root: .
-          paths:
-            - dist/
-            - packages/*/dist
-            - pysrc
+      - when:
+          condition: << parameters.npm_install >>
+          steps:
+            - run:
+                name: Installing project dependencies
+                command: npm ci
+            - save_cache:
+                name: Saving npm cache
+                key: npm-cache-v2-{{ arch }}-node<< parameters.node_version >>-npm<< parameters.npm_version >>-{{ checksum "package-lock.json" }}
+                paths:
+                  - << parameters.npm_cache_directory >>
   install_sdks_windows:
     steps:
       - restore_cache:
@@ -176,12 +171,23 @@ jobs:
       - image: cimg/node:<< parameters.node_version >>
     steps:
       - checkout
-      - install_project_dependencies:
+      - setup_npm:
           node_version: << parameters.node_version >>
+          npm_install: true
       - run:
           name: Linting project
           command: npm run lint
-      - build_project
+      - run:
+          name: Building project
+          command: npm run build:prod
+      - persist_to_workspace:
+          root: .
+          paths:
+            - dist/
+            - packages/*/dist
+            - pysrc
+            - node_modules
+            - packages/*/node_modules
   regression-test:
     <<: *defaults
     docker:
@@ -190,10 +196,10 @@ jobs:
       - checkout
       - install_sdks_linux
       - install_shellspec_dependencies
-      - install_project_dependencies:
-          node_version: << parameters.node_version >>
       - attach_workspace:
           at: .
+      - setup_npm:
+          node_version: << parameters.node_version >>
       - run:
           name: Installing test fixture dependencies
           working_directory: ./test/fixtures/basic-npm
@@ -226,12 +232,13 @@ jobs:
       - install_node_windows:
           node_version: << parameters.node_version >>
       - install_sdks_windows
-      - install_project_dependencies:
-          npm_cache_directory: ~\AppData\Local\npm-cache
-          node_version: << parameters.node_version >>
-          npm_global_sudo: false
       - attach_workspace:
           at: .
+      - setup_npm:
+          node_version: << parameters.node_version >>
+          npm_install: true
+          npm_cache_directory: ~\AppData\Local\npm-cache
+          npm_global_sudo: false
       - run:
           name: Configuring Snyk CLI
           command: node ./bin/snyk config set "api=$env:SNYK_API_KEY"
@@ -299,10 +306,10 @@ jobs:
           command: mkdir /mnt/ramdisk/tmp
       - checkout
       - install_sdks_linux
-      - install_project_dependencies:
-          node_version: << parameters.node_version >>
       - attach_workspace:
           at: .
+      - setup_npm:
+          node_version: << parameters.node_version >>
       - run:
           name: Configuring Snyk CLI
           command: node ./bin/snyk config set "api=${SNYK_API_KEY}"
@@ -360,10 +367,10 @@ jobs:
     steps:
       - checkout
       - install_release_dependencies
-      - install_project_dependencies:
-          node_version: << parameters.node_version >>
       - attach_workspace:
           at: .
+      - setup_npm:
+          node_version: << parameters.node_version >>
       - run:
           name: Updating package versions
           command: ./release-scripts/update-dev-versions.sh
@@ -400,10 +407,10 @@ jobs:
       - aws-cli/install:
           version: 2.2.32
       - install_release_dependencies
-      - install_project_dependencies:
-          node_version: << parameters.node_version >>
       - attach_workspace:
           at: .
+      - setup_npm:
+          node_version: << parameters.node_version >>
       - run:
           name: Updating package versions
           command: |
